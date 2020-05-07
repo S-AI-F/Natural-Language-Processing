@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 6 Sentiment Analysis | Natural Language Processing with R</title>
+  <meta name="description" content="This is a tutorial of various techniques used in natural language processing and text mining." />
+  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 6 Sentiment Analysis | Natural Language Processing with R" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="This is a tutorial of various techniques used in natural language processing and text mining." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 6 Sentiment Analysis | Natural Language Processing with R" />
+  
+  <meta name="twitter:description" content="This is a tutorial of various techniques used in natural language processing and text mining." />
+  
+
+<meta name="author" content="Saif SHabou" />
+
+
+<meta name="date" content="2020-05-06" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="RNN.html"/>
+<link rel="next" href="word-and-document-frequency-tf-idf.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">NLP with R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="text-processing.html"><a href="text-processing.html"><i class="fa fa-check"></i><b>2</b> Text processing</a><ul>
+<li class="chapter" data-level="2.1" data-path="text-processing.html"><a href="text-processing.html#text-data"><i class="fa fa-check"></i><b>2.1</b> Text data</a></li>
+<li class="chapter" data-level="2.2" data-path="text-processing.html"><a href="text-processing.html#nlp-applications"><i class="fa fa-check"></i><b>2.2</b> NLP applications</a></li>
+<li class="chapter" data-level="2.3" data-path="text-processing.html"><a href="text-processing.html#tokenization"><i class="fa fa-check"></i><b>2.3</b> Tokenization</a></li>
+<li class="chapter" data-level="2.4" data-path="text-processing.html"><a href="text-processing.html#stop-words-handeling"><i class="fa fa-check"></i><b>2.4</b> Stop words handeling</a></li>
+<li class="chapter" data-level="2.5" data-path="text-processing.html"><a href="text-processing.html#words-frequencies"><i class="fa fa-check"></i><b>2.5</b> Words frequencies</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="Word-embeddings.html"><a href="Word-embeddings.html"><i class="fa fa-check"></i><b>3</b> Word embeddings</a><ul>
+<li class="chapter" data-level="3.1" data-path="Word-embeddings.html"><a href="Word-embeddings.html#vectorizing-text"><i class="fa fa-check"></i><b>3.1</b> Vectorizing text</a></li>
+<li class="chapter" data-level="3.2" data-path="Word-embeddings.html"><a href="Word-embeddings.html#one-hot-encoding"><i class="fa fa-check"></i><b>3.2</b> One-hot encoding</a></li>
+<li class="chapter" data-level="3.3" data-path="Word-embeddings.html"><a href="Word-embeddings.html#word-embeddings-methods"><i class="fa fa-check"></i><b>3.3</b> Word embeddings methods</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="Word-embeddings.html"><a href="Word-embeddings.html#learn-world-embeddings"><i class="fa fa-check"></i><b>3.3.1</b> Learn world embeddings</a></li>
+<li class="chapter" data-level="3.3.2" data-path="Word-embeddings.html"><a href="Word-embeddings.html#pre-trained-word-embeddings"><i class="fa fa-check"></i><b>3.3.2</b> Pre-trained word embeddings</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="Word-embeddings.html"><a href="Word-embeddings.html#applications"><i class="fa fa-check"></i><b>3.4</b> Applications</a><ul>
+<li class="chapter" data-level="3.4.1" data-path="Word-embeddings.html"><a href="Word-embeddings.html#using-skip-gram"><i class="fa fa-check"></i><b>3.4.1</b> Using Skip-Gram</a></li>
+<li class="chapter" data-level="3.4.2" data-path="Word-embeddings.html"><a href="Word-embeddings.html#using-glove"><i class="fa fa-check"></i><b>3.4.2</b> Using GloVe</a></li>
+</ul></li>
+<li class="chapter" data-level="3.5" data-path="Word-embeddings.html"><a href="Word-embeddings.html#references"><i class="fa fa-check"></i><b>3.5</b> references</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="text-classification.html"><a href="text-classification.html"><i class="fa fa-check"></i><b>4</b> Text classification</a><ul>
+<li class="chapter" data-level="4.1" data-path="text-classification.html"><a href="text-classification.html#load-the-data"><i class="fa fa-check"></i><b>4.1</b> Load the data</a></li>
+<li class="chapter" data-level="4.2" data-path="text-classification.html"><a href="text-classification.html#prepare-the-data-for-neural-network"><i class="fa fa-check"></i><b>4.2</b> Prepare the data for neural network</a></li>
+<li class="chapter" data-level="4.3" data-path="text-classification.html"><a href="text-classification.html#building-the-model"><i class="fa fa-check"></i><b>4.3</b> Building the model</a></li>
+<li class="chapter" data-level="4.4" data-path="text-classification.html"><a href="text-classification.html#testing-the-model"><i class="fa fa-check"></i><b>4.4</b> Testing the model</a></li>
+<li class="chapter" data-level="4.5" data-path="text-classification.html"><a href="text-classification.html#reference"><i class="fa fa-check"></i><b>4.5</b> Reference</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="RNN.html"><a href="RNN.html"><i class="fa fa-check"></i><b>5</b> Reccurent Neural Networks (RNN)</a><ul>
+<li class="chapter" data-level="5.1" data-path="RNN.html"><a href="RNN.html#understanding-recurrent-neural-network"><i class="fa fa-check"></i><b>5.1</b> Understanding Recurrent Neural Network</a></li>
+<li class="chapter" data-level="5.2" data-path="RNN.html"><a href="RNN.html#rnn-with-keras"><i class="fa fa-check"></i><b>5.2</b> RNN with Keras</a></li>
+<li class="chapter" data-level="5.3" data-path="RNN.html"><a href="RNN.html#lstm-with-keras"><i class="fa fa-check"></i><b>5.3</b> LSTM with Keras</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="sentiment-analysis.html"><a href="sentiment-analysis.html"><i class="fa fa-check"></i><b>6</b> Sentiment Analysis</a><ul>
+<li class="chapter" data-level="6.1" data-path="sentiment-analysis.html"><a href="sentiment-analysis.html#the-sentiments-dataset"><i class="fa fa-check"></i><b>6.1</b> The “Sentiments” dataset</a></li>
+<li class="chapter" data-level="6.2" data-path="sentiment-analysis.html"><a href="sentiment-analysis.html#application"><i class="fa fa-check"></i><b>6.2</b> Application</a></li>
+<li class="chapter" data-level="6.3" data-path="sentiment-analysis.html"><a href="sentiment-analysis.html#references-1"><i class="fa fa-check"></i><b>6.3</b> References:</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="word-and-document-frequency-tf-idf.html"><a href="word-and-document-frequency-tf-idf.html"><i class="fa fa-check"></i><b>7</b> Word and document frequency (TF-IDF)</a><ul>
+<li class="chapter" data-level="7.1" data-path="word-and-document-frequency-tf-idf.html"><a href="word-and-document-frequency-tf-idf.html#term-frequency-application"><i class="fa fa-check"></i><b>7.1</b> Term frequency application</a></li>
+<li class="chapter" data-level="7.2" data-path="word-and-document-frequency-tf-idf.html"><a href="word-and-document-frequency-tf-idf.html#zipfs-law"><i class="fa fa-check"></i><b>7.2</b> Zipf’s law</a></li>
+<li class="chapter" data-level="7.3" data-path="word-and-document-frequency-tf-idf.html"><a href="word-and-document-frequency-tf-idf.html#tf_idf-metric"><i class="fa fa-check"></i><b>7.3</b> TF_IDF metric</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="topic-modeling.html"><a href="topic-modeling.html"><i class="fa fa-check"></i><b>8</b> Topic modeling</a><ul>
+<li class="chapter" data-level="8.1" data-path="topic-modeling.html"><a href="topic-modeling.html#latent-dirichlet-allocation"><i class="fa fa-check"></i><b>8.1</b> Latent Dirichlet allocation</a></li>
+<li class="chapter" data-level="8.2" data-path="topic-modeling.html"><a href="topic-modeling.html#document-topic-probabilities"><i class="fa fa-check"></i><b>8.2</b> Document-topic probabilities</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="words-relationships-analysis.html"><a href="words-relationships-analysis.html"><i class="fa fa-check"></i><b>9</b> Words’ relationships analysis</a><ul>
+<li class="chapter" data-level="9.1" data-path="words-relationships-analysis.html"><a href="words-relationships-analysis.html#extracting-bi-grams"><i class="fa fa-check"></i><b>9.1</b> Extracting bi-grams</a></li>
+<li class="chapter" data-level="9.2" data-path="words-relationships-analysis.html"><a href="words-relationships-analysis.html#analyzing-bi-grams"><i class="fa fa-check"></i><b>9.2</b> Analyzing bi-grams</a></li>
+<li class="chapter" data-level="9.3" data-path="words-relationships-analysis.html"><a href="words-relationships-analysis.html#visualizing-a-network-of-bigrams"><i class="fa fa-check"></i><b>9.3</b> Visualizing a network of bigrams</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="document-term-matrix.html"><a href="document-term-matrix.html"><i class="fa fa-check"></i><b>10</b> Document-term matrix</a><ul>
+<li class="chapter" data-level="10.1" data-path="document-term-matrix.html"><a href="document-term-matrix.html#converting-dtm-into-dataframe"><i class="fa fa-check"></i><b>10.1</b> COnverting DTM into dataframe</a></li>
+<li class="chapter" data-level="10.2" data-path="document-term-matrix.html"><a href="document-term-matrix.html#generating-document-term-matrix"><i class="fa fa-check"></i><b>10.2</b> Generating Document-term matrix</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Natural Language Processing with R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="sentiment-analysis" class="section level1">
+<h1><span class="header-section-number">Chapter 6</span> Sentiment Analysis</h1>
+<div id="the-sentiments-dataset" class="section level2">
+<h2><span class="header-section-number">6.1</span> The “Sentiments” dataset</h2>
+<p>There are several ethods and dictionaries that we can use for evaluating the opinion or emotion in text. We can site:</p>
+<ul>
+<li><code>AFINN</code>: <a href="http://www2.imm.dtu.dk/pubdb/views/publication_details.php?id=6010" class="uri">http://www2.imm.dtu.dk/pubdb/views/publication_details.php?id=6010</a></li>
+<li><code>bing</code>: <a href="https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html" class="uri">https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html</a></li>
+<li><code>nrc</code>: <a href="http://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm" class="uri">http://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm</a></li>
+</ul>
+<p>These datsets contain many English words with assigned scores for positive/negative sentiment and emotions (joy, anger, sadness…). These data are mainly constructed via crowdsourcing tools (for example: Amazon Mechanical Turk) and valiated based by using available dataset such as movie review, Twitter… They are only based on unigrams so they don’t take inot account negation (“no good”, “not sad”…).</p>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb104-1" title="1"><span class="kw">library</span>(tidytext)</a>
+<a class="sourceLine" id="cb104-2" title="2"><span class="kw">library</span>(textdata)</a></code></pre></div>
+<pre><code>## 
+## Attaching package: &#39;textdata&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:keras&#39;:
+## 
+##     dataset_imdb</code></pre>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb107-1" title="1"><span class="kw">get_sentiments</span>(<span class="st">&quot;bing&quot;</span>)</a></code></pre></div>
+<pre><code>## # A tibble: 6,786 x 2
+##    word        sentiment
+##    &lt;chr&gt;       &lt;chr&gt;    
+##  1 2-faces     negative 
+##  2 abnormal    negative 
+##  3 abolish     negative 
+##  4 abominable  negative 
+##  5 abominably  negative 
+##  6 abominate   negative 
+##  7 abomination negative 
+##  8 abort       negative 
+##  9 aborted     negative 
+## 10 aborts      negative 
+## # ... with 6,776 more rows</code></pre>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb109-1" title="1"><span class="kw">get_sentiments</span>(<span class="st">&quot;nrc&quot;</span>)</a></code></pre></div>
+<pre><code>## # A tibble: 13,901 x 2
+##    word        sentiment
+##    &lt;chr&gt;       &lt;chr&gt;    
+##  1 abacus      trust    
+##  2 abandon     fear     
+##  3 abandon     negative 
+##  4 abandon     sadness  
+##  5 abandoned   anger    
+##  6 abandoned   fear     
+##  7 abandoned   negative 
+##  8 abandoned   sadness  
+##  9 abandonment anger    
+## 10 abandonment fear     
+## # ... with 13,891 more rows</code></pre>
+</div>
+<div id="application" class="section level2">
+<h2><span class="header-section-number">6.2</span> Application</h2>
+<p>We can implement sentiment analysis by joinin text data with setiment dataset. Here is an example for finding the most common “joy” words in “Emma” book from “jane austen” autor ny using the “nrc” lexicon.</p>
+<p>We prepare the text data by getting words tokens</p>
+<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb111-1" title="1">tidy_books &lt;-<span class="st"> </span><span class="kw">austen_books</span>() <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb111-2" title="2"><span class="st">  </span><span class="kw">group_by</span>(book) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb111-3" title="3"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">linenumber =</span> <span class="kw">row_number</span>(),</a>
+<a class="sourceLine" id="cb111-4" title="4">         <span class="dt">chapter =</span> <span class="kw">cumsum</span>(<span class="kw">str_detect</span>(text, <span class="kw">regex</span>(<span class="st">&quot;^chapter [</span><span class="ch">\\</span><span class="st">divxlc]&quot;</span>, </a>
+<a class="sourceLine" id="cb111-5" title="5">                                                 <span class="dt">ignore_case =</span> <span class="ot">TRUE</span>)))) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb111-6" title="6"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb111-7" title="7"><span class="st">  </span><span class="kw">unnest_tokens</span>(word, text)</a>
+<a class="sourceLine" id="cb111-8" title="8">tidy_books</a></code></pre></div>
+<pre><code>## # A tibble: 725,055 x 4
+##    book                linenumber chapter word       
+##    &lt;fct&gt;                    &lt;int&gt;   &lt;int&gt; &lt;chr&gt;      
+##  1 Sense &amp; Sensibility          1       0 sense      
+##  2 Sense &amp; Sensibility          1       0 and        
+##  3 Sense &amp; Sensibility          1       0 sensibility
+##  4 Sense &amp; Sensibility          3       0 by         
+##  5 Sense &amp; Sensibility          3       0 jane       
+##  6 Sense &amp; Sensibility          3       0 austen     
+##  7 Sense &amp; Sensibility          5       0 1811       
+##  8 Sense &amp; Sensibility         10       1 chapter    
+##  9 Sense &amp; Sensibility         10       1 1          
+## 10 Sense &amp; Sensibility         13       1 the        
+## # ... with 725,045 more rows</code></pre>
+<p>Now we have text in a tidy format with one word per row. We filter the “joy” words from NRC lexicon and join them with the words in “Emma” book.</p>
+<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb113-1" title="1">nrc_joy &lt;-<span class="st"> </span><span class="kw">get_sentiments</span>(<span class="st">&quot;nrc&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb113-2" title="2"><span class="st">  </span><span class="kw">filter</span>(sentiment <span class="op">==</span><span class="st"> &quot;joy&quot;</span>)</a>
+<a class="sourceLine" id="cb113-3" title="3"></a>
+<a class="sourceLine" id="cb113-4" title="4">tidy_books <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb113-5" title="5"><span class="st">  </span><span class="kw">filter</span>(book <span class="op">==</span><span class="st"> &quot;Emma&quot;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb113-6" title="6"><span class="st">  </span><span class="kw">inner_join</span>(nrc_joy) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb113-7" title="7"><span class="st">  </span><span class="kw">count</span>(word, <span class="dt">sort =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<pre><code>## Joining, by = &quot;word&quot;</code></pre>
+<pre><code>## # A tibble: 303 x 2
+##    word        n
+##    &lt;chr&gt;   &lt;int&gt;
+##  1 good      359
+##  2 young     192
+##  3 friend    166
+##  4 hope      143
+##  5 happy     125
+##  6 love      117
+##  7 deal       92
+##  8 found      92
+##  9 present    89
+## 10 kind       82
+## # ... with 293 more rows</code></pre>
+<p>Here is another example of using the “bing” lexicon to count the number of positive versus negative words in the different books.</p>
+<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb116-1" title="1"><span class="co"># prepare the data b calculating sentiment score</span></a>
+<a class="sourceLine" id="cb116-2" title="2"><span class="kw">library</span>(tidyr)</a>
+<a class="sourceLine" id="cb116-3" title="3"></a>
+<a class="sourceLine" id="cb116-4" title="4">jane_austen_sentiment &lt;-<span class="st"> </span>tidy_books <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb116-5" title="5"><span class="st">  </span><span class="kw">inner_join</span>(<span class="kw">get_sentiments</span>(<span class="st">&quot;bing&quot;</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb116-6" title="6"><span class="st">  </span><span class="kw">count</span>(book, <span class="dt">index =</span> linenumber <span class="op">%/%</span><span class="st"> </span><span class="dv">80</span>, sentiment) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb116-7" title="7"><span class="st">  </span><span class="kw">spread</span>(sentiment, n, <span class="dt">fill =</span> <span class="dv">0</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb116-8" title="8"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">sentiment =</span> positive <span class="op">-</span><span class="st"> </span>negative)</a></code></pre></div>
+<pre><code>## Joining, by = &quot;word&quot;</code></pre>
+<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb118-1" title="1">jane_austen_sentiment</a></code></pre></div>
+<pre><code>## # A tibble: 920 x 5
+##    book                index negative positive sentiment
+##    &lt;fct&gt;               &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+##  1 Sense &amp; Sensibility     0       16       32        16
+##  2 Sense &amp; Sensibility     1       19       53        34
+##  3 Sense &amp; Sensibility     2       12       31        19
+##  4 Sense &amp; Sensibility     3       15       31        16
+##  5 Sense &amp; Sensibility     4       16       34        18
+##  6 Sense &amp; Sensibility     5       16       51        35
+##  7 Sense &amp; Sensibility     6       24       40        16
+##  8 Sense &amp; Sensibility     7       23       51        28
+##  9 Sense &amp; Sensibility     8       30       40        10
+## 10 Sense &amp; Sensibility     9       15       19         4
+## # ... with 910 more rows</code></pre>
+<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb120-1" title="1"><span class="co"># plot the result by book</span></a>
+<a class="sourceLine" id="cb120-2" title="2"><span class="kw">library</span>(ggplot2)</a>
+<a class="sourceLine" id="cb120-3" title="3"></a>
+<a class="sourceLine" id="cb120-4" title="4"><span class="kw">ggplot</span>(jane_austen_sentiment, <span class="kw">aes</span>(index, sentiment, <span class="dt">fill =</span> book)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb120-5" title="5"><span class="st">  </span><span class="kw">geom_col</span>(<span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb120-6" title="6"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>book, <span class="dt">ncol =</span> <span class="dv">2</span>, <span class="dt">scales =</span> <span class="st">&quot;free_x&quot;</span>)</a></code></pre></div>
+<p><img src="NLP-book_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>We can tag positive and negative words by using wordclouds</p>
+<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb121-1" title="1"><span class="kw">library</span>(reshape2)</a></code></pre></div>
+<pre><code>## 
+## Attaching package: &#39;reshape2&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
+## 
+##     smiths</code></pre>
+<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb124-1" title="1">tidy_books <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb124-2" title="2"><span class="st">  </span><span class="kw">inner_join</span>(<span class="kw">get_sentiments</span>(<span class="st">&quot;bing&quot;</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb124-3" title="3"><span class="st">  </span><span class="kw">count</span>(word, sentiment, <span class="dt">sort =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb124-4" title="4"><span class="st">  </span><span class="kw">acast</span>(word <span class="op">~</span><span class="st"> </span>sentiment, <span class="dt">value.var =</span> <span class="st">&quot;n&quot;</span>, <span class="dt">fill =</span> <span class="dv">0</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb124-5" title="5"><span class="st">  </span><span class="kw">comparison.cloud</span>(<span class="dt">colors =</span> <span class="kw">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;green&quot;</span>),</a>
+<a class="sourceLine" id="cb124-6" title="6">                   <span class="dt">max.words =</span> <span class="dv">100</span>)</a></code></pre></div>
+<pre><code>## Joining, by = &quot;word&quot;</code></pre>
+<p><img src="NLP-book_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
+<div id="references-1" class="section level2">
+<h2><span class="header-section-number">6.3</span> References:</h2>
+<ul>
+<li><a href="https://www.tidytextmining.com/sentiment.html" class="uri">https://www.tidytextmining.com/sentiment.html</a></li>
+</ul>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="RNN.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="word-and-document-frequency-tf-idf.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["NLP-book.pdf", "NLP-book.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

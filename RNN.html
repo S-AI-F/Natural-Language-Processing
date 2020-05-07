@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 5 Reccurent Neural Networks (RNN) | Natural Language Processing with R</title>
+  <meta name="description" content="This is a tutorial of various techniques used in natural language processing and text mining." />
+  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 5 Reccurent Neural Networks (RNN) | Natural Language Processing with R" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="This is a tutorial of various techniques used in natural language processing and text mining." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 5 Reccurent Neural Networks (RNN) | Natural Language Processing with R" />
+  
+  <meta name="twitter:description" content="This is a tutorial of various techniques used in natural language processing and text mining." />
+  
+
+<meta name="author" content="Saif SHabou" />
+
+
+<meta name="date" content="2020-05-06" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="text-classification.html"/>
+<link rel="next" href="sentiment-analysis.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">NLP with R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="text-processing.html"><a href="text-processing.html"><i class="fa fa-check"></i><b>2</b> Text processing</a><ul>
+<li class="chapter" data-level="2.1" data-path="text-processing.html"><a href="text-processing.html#text-data"><i class="fa fa-check"></i><b>2.1</b> Text data</a></li>
+<li class="chapter" data-level="2.2" data-path="text-processing.html"><a href="text-processing.html#nlp-applications"><i class="fa fa-check"></i><b>2.2</b> NLP applications</a></li>
+<li class="chapter" data-level="2.3" data-path="text-processing.html"><a href="text-processing.html#tokenization"><i class="fa fa-check"></i><b>2.3</b> Tokenization</a></li>
+<li class="chapter" data-level="2.4" data-path="text-processing.html"><a href="text-processing.html#stop-words-handeling"><i class="fa fa-check"></i><b>2.4</b> Stop words handeling</a></li>
+<li class="chapter" data-level="2.5" data-path="text-processing.html"><a href="text-processing.html#words-frequencies"><i class="fa fa-check"></i><b>2.5</b> Words frequencies</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="Word-embeddings.html"><a href="Word-embeddings.html"><i class="fa fa-check"></i><b>3</b> Word embeddings</a><ul>
+<li class="chapter" data-level="3.1" data-path="Word-embeddings.html"><a href="Word-embeddings.html#vectorizing-text"><i class="fa fa-check"></i><b>3.1</b> Vectorizing text</a></li>
+<li class="chapter" data-level="3.2" data-path="Word-embeddings.html"><a href="Word-embeddings.html#one-hot-encoding"><i class="fa fa-check"></i><b>3.2</b> One-hot encoding</a></li>
+<li class="chapter" data-level="3.3" data-path="Word-embeddings.html"><a href="Word-embeddings.html#word-embeddings-methods"><i class="fa fa-check"></i><b>3.3</b> Word embeddings methods</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="Word-embeddings.html"><a href="Word-embeddings.html#learn-world-embeddings"><i class="fa fa-check"></i><b>3.3.1</b> Learn world embeddings</a></li>
+<li class="chapter" data-level="3.3.2" data-path="Word-embeddings.html"><a href="Word-embeddings.html#pre-trained-word-embeddings"><i class="fa fa-check"></i><b>3.3.2</b> Pre-trained word embeddings</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="Word-embeddings.html"><a href="Word-embeddings.html#applications"><i class="fa fa-check"></i><b>3.4</b> Applications</a><ul>
+<li class="chapter" data-level="3.4.1" data-path="Word-embeddings.html"><a href="Word-embeddings.html#using-skip-gram"><i class="fa fa-check"></i><b>3.4.1</b> Using Skip-Gram</a></li>
+<li class="chapter" data-level="3.4.2" data-path="Word-embeddings.html"><a href="Word-embeddings.html#using-glove"><i class="fa fa-check"></i><b>3.4.2</b> Using GloVe</a></li>
+</ul></li>
+<li class="chapter" data-level="3.5" data-path="Word-embeddings.html"><a href="Word-embeddings.html#references"><i class="fa fa-check"></i><b>3.5</b> references</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="text-classification.html"><a href="text-classification.html"><i class="fa fa-check"></i><b>4</b> Text classification</a><ul>
+<li class="chapter" data-level="4.1" data-path="text-classification.html"><a href="text-classification.html#load-the-data"><i class="fa fa-check"></i><b>4.1</b> Load the data</a></li>
+<li class="chapter" data-level="4.2" data-path="text-classification.html"><a href="text-classification.html#prepare-the-data-for-neural-network"><i class="fa fa-check"></i><b>4.2</b> Prepare the data for neural network</a></li>
+<li class="chapter" data-level="4.3" data-path="text-classification.html"><a href="text-classification.html#building-the-model"><i class="fa fa-check"></i><b>4.3</b> Building the model</a></li>
+<li class="chapter" data-level="4.4" data-path="text-classification.html"><a href="text-classification.html#testing-the-model"><i class="fa fa-check"></i><b>4.4</b> Testing the model</a></li>
+<li class="chapter" data-level="4.5" data-path="text-classification.html"><a href="text-classification.html#reference"><i class="fa fa-check"></i><b>4.5</b> Reference</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="RNN.html"><a href="RNN.html"><i class="fa fa-check"></i><b>5</b> Reccurent Neural Networks (RNN)</a><ul>
+<li class="chapter" data-level="5.1" data-path="RNN.html"><a href="RNN.html#understanding-recurrent-neural-network"><i class="fa fa-check"></i><b>5.1</b> Understanding Recurrent Neural Network</a></li>
+<li class="chapter" data-level="5.2" data-path="RNN.html"><a href="RNN.html#rnn-with-keras"><i class="fa fa-check"></i><b>5.2</b> RNN with Keras</a></li>
+<li class="chapter" data-level="5.3" data-path="RNN.html"><a href="RNN.html#lstm-with-keras"><i class="fa fa-check"></i><b>5.3</b> LSTM with Keras</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="sentiment-analysis.html"><a href="sentiment-analysis.html"><i class="fa fa-check"></i><b>6</b> Sentiment Analysis</a><ul>
+<li class="chapter" data-level="6.1" data-path="sentiment-analysis.html"><a href="sentiment-analysis.html#the-sentiments-dataset"><i class="fa fa-check"></i><b>6.1</b> The “Sentiments” dataset</a></li>
+<li class="chapter" data-level="6.2" data-path="sentiment-analysis.html"><a href="sentiment-analysis.html#application"><i class="fa fa-check"></i><b>6.2</b> Application</a></li>
+<li class="chapter" data-level="6.3" data-path="sentiment-analysis.html"><a href="sentiment-analysis.html#references-1"><i class="fa fa-check"></i><b>6.3</b> References:</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="word-and-document-frequency-tf-idf.html"><a href="word-and-document-frequency-tf-idf.html"><i class="fa fa-check"></i><b>7</b> Word and document frequency (TF-IDF)</a><ul>
+<li class="chapter" data-level="7.1" data-path="word-and-document-frequency-tf-idf.html"><a href="word-and-document-frequency-tf-idf.html#term-frequency-application"><i class="fa fa-check"></i><b>7.1</b> Term frequency application</a></li>
+<li class="chapter" data-level="7.2" data-path="word-and-document-frequency-tf-idf.html"><a href="word-and-document-frequency-tf-idf.html#zipfs-law"><i class="fa fa-check"></i><b>7.2</b> Zipf’s law</a></li>
+<li class="chapter" data-level="7.3" data-path="word-and-document-frequency-tf-idf.html"><a href="word-and-document-frequency-tf-idf.html#tf_idf-metric"><i class="fa fa-check"></i><b>7.3</b> TF_IDF metric</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="topic-modeling.html"><a href="topic-modeling.html"><i class="fa fa-check"></i><b>8</b> Topic modeling</a><ul>
+<li class="chapter" data-level="8.1" data-path="topic-modeling.html"><a href="topic-modeling.html#latent-dirichlet-allocation"><i class="fa fa-check"></i><b>8.1</b> Latent Dirichlet allocation</a></li>
+<li class="chapter" data-level="8.2" data-path="topic-modeling.html"><a href="topic-modeling.html#document-topic-probabilities"><i class="fa fa-check"></i><b>8.2</b> Document-topic probabilities</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="words-relationships-analysis.html"><a href="words-relationships-analysis.html"><i class="fa fa-check"></i><b>9</b> Words’ relationships analysis</a><ul>
+<li class="chapter" data-level="9.1" data-path="words-relationships-analysis.html"><a href="words-relationships-analysis.html#extracting-bi-grams"><i class="fa fa-check"></i><b>9.1</b> Extracting bi-grams</a></li>
+<li class="chapter" data-level="9.2" data-path="words-relationships-analysis.html"><a href="words-relationships-analysis.html#analyzing-bi-grams"><i class="fa fa-check"></i><b>9.2</b> Analyzing bi-grams</a></li>
+<li class="chapter" data-level="9.3" data-path="words-relationships-analysis.html"><a href="words-relationships-analysis.html#visualizing-a-network-of-bigrams"><i class="fa fa-check"></i><b>9.3</b> Visualizing a network of bigrams</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="document-term-matrix.html"><a href="document-term-matrix.html"><i class="fa fa-check"></i><b>10</b> Document-term matrix</a><ul>
+<li class="chapter" data-level="10.1" data-path="document-term-matrix.html"><a href="document-term-matrix.html#converting-dtm-into-dataframe"><i class="fa fa-check"></i><b>10.1</b> COnverting DTM into dataframe</a></li>
+<li class="chapter" data-level="10.2" data-path="document-term-matrix.html"><a href="document-term-matrix.html#generating-document-term-matrix"><i class="fa fa-check"></i><b>10.2</b> Generating Document-term matrix</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Natural Language Processing with R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="RNN" class="section level1">
+<h1><span class="header-section-number">Chapter 5</span> Reccurent Neural Networks (RNN)</h1>
+<div id="understanding-recurrent-neural-network" class="section level2">
+<h2><span class="header-section-number">5.1</span> Understanding Recurrent Neural Network</h2>
+</div>
+<div id="rnn-with-keras" class="section level2">
+<h2><span class="header-section-number">5.2</span> RNN with Keras</h2>
+<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb93-1" title="1"><span class="kw">library</span>(keras)</a>
+<a class="sourceLine" id="cb93-2" title="2">max_features &lt;-<span class="st"> </span><span class="dv">10000</span>  <span class="co"># Number of words to consider as features</span></a>
+<a class="sourceLine" id="cb93-3" title="3">maxlen &lt;-<span class="st"> </span><span class="dv">500</span>  <span class="co"># Cuts off texts after this many words (among the max_features most common words)</span></a>
+<a class="sourceLine" id="cb93-4" title="4">batch_size &lt;-<span class="st"> </span><span class="dv">32</span></a>
+<a class="sourceLine" id="cb93-5" title="5"><span class="kw">cat</span>(<span class="st">&quot;Loading data...</span><span class="ch">\n</span><span class="st">&quot;</span>)</a></code></pre></div>
+<pre><code>## Loading data...</code></pre>
+<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb95-1" title="1"><span class="co"># load data</span></a>
+<a class="sourceLine" id="cb95-2" title="2">imdb &lt;-<span class="st"> </span><span class="kw">dataset_imdb</span>(<span class="dt">num_words =</span> max_features)</a>
+<a class="sourceLine" id="cb95-3" title="3"><span class="kw">c</span>(<span class="kw">c</span>(input_train, y_train), <span class="kw">c</span>(input_test, y_test)) <span class="op">%&lt;-%</span><span class="st"> </span>imdb </a>
+<a class="sourceLine" id="cb95-4" title="4"><span class="kw">cat</span>(<span class="kw">length</span>(input_train), <span class="st">&quot;train sequences</span><span class="ch">\n</span><span class="st">&quot;</span>)</a></code></pre></div>
+<pre><code>## 25000 train sequences</code></pre>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb97-1" title="1"><span class="kw">cat</span>(<span class="kw">length</span>(input_test), <span class="st">&quot;test sequences&quot;</span>)</a></code></pre></div>
+<pre><code>## 25000 test sequences</code></pre>
+<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb99-1" title="1"><span class="co"># pad sequences</span></a>
+<a class="sourceLine" id="cb99-2" title="2">input_train &lt;-<span class="st"> </span><span class="kw">pad_sequences</span>(input_train, <span class="dt">maxlen =</span> maxlen)</a>
+<a class="sourceLine" id="cb99-3" title="3">input_test &lt;-<span class="st"> </span><span class="kw">pad_sequences</span>(input_test, <span class="dt">maxlen =</span> maxlen)</a>
+<a class="sourceLine" id="cb99-4" title="4"><span class="kw">cat</span>(<span class="st">&quot;input_train shape:&quot;</span>, <span class="kw">dim</span>(input_train), <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>)</a></code></pre></div>
+<pre><code>## input_train shape: 25000 500</code></pre>
+<p>let’s train the model</p>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb101-1" title="1">model &lt;-<span class="st"> </span><span class="kw">keras_model_sequential</span>() <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb101-2" title="2"><span class="st">  </span><span class="kw">layer_embedding</span>(<span class="dt">input_dim =</span> max_features, <span class="dt">output_dim =</span> <span class="dv">32</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb101-3" title="3"><span class="st">  </span><span class="kw">layer_simple_rnn</span>(<span class="dt">units =</span> <span class="dv">32</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb101-4" title="4"><span class="st">  </span><span class="kw">layer_dense</span>(<span class="dt">units =</span> <span class="dv">1</span>, <span class="dt">activation =</span> <span class="st">&quot;sigmoid&quot;</span>)</a>
+<a class="sourceLine" id="cb101-5" title="5">model <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">compile</span>(</a>
+<a class="sourceLine" id="cb101-6" title="6">  <span class="dt">optimizer =</span> <span class="st">&quot;rmsprop&quot;</span>,</a>
+<a class="sourceLine" id="cb101-7" title="7">  <span class="dt">loss =</span> <span class="st">&quot;binary_crossentropy&quot;</span>,</a>
+<a class="sourceLine" id="cb101-8" title="8">  <span class="dt">metrics =</span> <span class="kw">c</span>(<span class="st">&quot;acc&quot;</span>)</a>
+<a class="sourceLine" id="cb101-9" title="9">)</a>
+<a class="sourceLine" id="cb101-10" title="10">history &lt;-<span class="st"> </span>model <span class="op">%&gt;%</span><span class="st"> </span>keras<span class="op">::</span><span class="kw">fit</span>(</a>
+<a class="sourceLine" id="cb101-11" title="11">  input_train, y_train,</a>
+<a class="sourceLine" id="cb101-12" title="12">  <span class="dt">epochs =</span> <span class="dv">10</span>,</a>
+<a class="sourceLine" id="cb101-13" title="13">  <span class="dt">batch_size =</span> <span class="dv">128</span>,</a>
+<a class="sourceLine" id="cb101-14" title="14">  <span class="dt">validation_split =</span> <span class="fl">0.2</span></a>
+<a class="sourceLine" id="cb101-15" title="15">)</a>
+<a class="sourceLine" id="cb101-16" title="16"></a>
+<a class="sourceLine" id="cb101-17" title="17"><span class="kw">plot</span>(history)</a></code></pre></div>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="NLP-book_files/figure-html/RNN_keras_model_sequential%20-1.png" width="672" /></p>
+</div>
+<div id="lstm-with-keras" class="section level2">
+<h2><span class="header-section-number">5.3</span> LSTM with Keras</h2>
+<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb103-1" title="1">model &lt;-<span class="st"> </span><span class="kw">keras_model_sequential</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb103-2" title="2"><span class="st">  </span><span class="kw">layer_embedding</span>(<span class="dt">input_dim =</span> max_features, <span class="dt">output_dim =</span> <span class="dv">32</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb103-3" title="3"><span class="st">  </span><span class="kw">layer_lstm</span>(<span class="dt">units =</span> <span class="dv">32</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb103-4" title="4"><span class="st">  </span><span class="kw">layer_dense</span>(<span class="dt">units =</span> <span class="dv">1</span>, <span class="dt">activation =</span> <span class="st">&quot;sigmoid&quot;</span>)</a>
+<a class="sourceLine" id="cb103-5" title="5"></a>
+<a class="sourceLine" id="cb103-6" title="6">model <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">compile</span>(</a>
+<a class="sourceLine" id="cb103-7" title="7">  <span class="dt">optimizer =</span> <span class="st">&quot;rmsprop&quot;</span>, </a>
+<a class="sourceLine" id="cb103-8" title="8">  <span class="dt">loss =</span> <span class="st">&quot;binary_crossentropy&quot;</span>, </a>
+<a class="sourceLine" id="cb103-9" title="9">  <span class="dt">metrics =</span> <span class="kw">c</span>(<span class="st">&quot;acc&quot;</span>)</a>
+<a class="sourceLine" id="cb103-10" title="10">)</a>
+<a class="sourceLine" id="cb103-11" title="11"></a>
+<a class="sourceLine" id="cb103-12" title="12">history &lt;-<span class="st"> </span>model <span class="op">%&gt;%</span><span class="st"> </span>keras<span class="op">::</span><span class="kw">fit</span>(</a>
+<a class="sourceLine" id="cb103-13" title="13">  input_train, y_train,</a>
+<a class="sourceLine" id="cb103-14" title="14">  <span class="dt">epochs =</span> <span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb103-15" title="15">  <span class="dt">batch_size =</span> <span class="dv">128</span>,</a>
+<a class="sourceLine" id="cb103-16" title="16">  <span class="dt">validation_split =</span> <span class="fl">0.2</span></a>
+<a class="sourceLine" id="cb103-17" title="17">)</a>
+<a class="sourceLine" id="cb103-18" title="18"><span class="kw">plot</span>(history)</a></code></pre></div>
+<p><img src="NLP-book_files/figure-html/LSTM_keras_model_sequential%20-1.png" width="672" /></p>
+<ul>
+<li><a href="https://jjallaire.github.io/deep-learning-with-r-notebooks/notebooks/6.3-advanced-usage-of-recurrent-neural-networks.nb.html" class="uri">https://jjallaire.github.io/deep-learning-with-r-notebooks/notebooks/6.3-advanced-usage-of-recurrent-neural-networks.nb.html</a></li>
+</ul>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="text-classification.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="sentiment-analysis.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["NLP-book.pdf", "NLP-book.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

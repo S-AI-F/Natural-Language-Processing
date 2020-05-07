@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 10 Document-term matrix | Natural Language Processing with R</title>
+  <meta name="description" content="This is a tutorial of various techniques used in natural language processing and text mining." />
+  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 10 Document-term matrix | Natural Language Processing with R" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="This is a tutorial of various techniques used in natural language processing and text mining." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 10 Document-term matrix | Natural Language Processing with R" />
+  
+  <meta name="twitter:description" content="This is a tutorial of various techniques used in natural language processing and text mining." />
+  
+
+<meta name="author" content="Saif SHabou" />
+
+
+<meta name="date" content="2020-05-06" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="words-relationships-analysis.html"/>
+
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">NLP with R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="text-processing.html"><a href="text-processing.html"><i class="fa fa-check"></i><b>2</b> Text processing</a><ul>
+<li class="chapter" data-level="2.1" data-path="text-processing.html"><a href="text-processing.html#text-data"><i class="fa fa-check"></i><b>2.1</b> Text data</a></li>
+<li class="chapter" data-level="2.2" data-path="text-processing.html"><a href="text-processing.html#nlp-applications"><i class="fa fa-check"></i><b>2.2</b> NLP applications</a></li>
+<li class="chapter" data-level="2.3" data-path="text-processing.html"><a href="text-processing.html#tokenization"><i class="fa fa-check"></i><b>2.3</b> Tokenization</a></li>
+<li class="chapter" data-level="2.4" data-path="text-processing.html"><a href="text-processing.html#stop-words-handeling"><i class="fa fa-check"></i><b>2.4</b> Stop words handeling</a></li>
+<li class="chapter" data-level="2.5" data-path="text-processing.html"><a href="text-processing.html#words-frequencies"><i class="fa fa-check"></i><b>2.5</b> Words frequencies</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="Word-embeddings.html"><a href="Word-embeddings.html"><i class="fa fa-check"></i><b>3</b> Word embeddings</a><ul>
+<li class="chapter" data-level="3.1" data-path="Word-embeddings.html"><a href="Word-embeddings.html#vectorizing-text"><i class="fa fa-check"></i><b>3.1</b> Vectorizing text</a></li>
+<li class="chapter" data-level="3.2" data-path="Word-embeddings.html"><a href="Word-embeddings.html#one-hot-encoding"><i class="fa fa-check"></i><b>3.2</b> One-hot encoding</a></li>
+<li class="chapter" data-level="3.3" data-path="Word-embeddings.html"><a href="Word-embeddings.html#word-embeddings-methods"><i class="fa fa-check"></i><b>3.3</b> Word embeddings methods</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="Word-embeddings.html"><a href="Word-embeddings.html#learn-world-embeddings"><i class="fa fa-check"></i><b>3.3.1</b> Learn world embeddings</a></li>
+<li class="chapter" data-level="3.3.2" data-path="Word-embeddings.html"><a href="Word-embeddings.html#pre-trained-word-embeddings"><i class="fa fa-check"></i><b>3.3.2</b> Pre-trained word embeddings</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="Word-embeddings.html"><a href="Word-embeddings.html#applications"><i class="fa fa-check"></i><b>3.4</b> Applications</a><ul>
+<li class="chapter" data-level="3.4.1" data-path="Word-embeddings.html"><a href="Word-embeddings.html#using-skip-gram"><i class="fa fa-check"></i><b>3.4.1</b> Using Skip-Gram</a></li>
+<li class="chapter" data-level="3.4.2" data-path="Word-embeddings.html"><a href="Word-embeddings.html#using-glove"><i class="fa fa-check"></i><b>3.4.2</b> Using GloVe</a></li>
+</ul></li>
+<li class="chapter" data-level="3.5" data-path="Word-embeddings.html"><a href="Word-embeddings.html#references"><i class="fa fa-check"></i><b>3.5</b> references</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="text-classification.html"><a href="text-classification.html"><i class="fa fa-check"></i><b>4</b> Text classification</a><ul>
+<li class="chapter" data-level="4.1" data-path="text-classification.html"><a href="text-classification.html#load-the-data"><i class="fa fa-check"></i><b>4.1</b> Load the data</a></li>
+<li class="chapter" data-level="4.2" data-path="text-classification.html"><a href="text-classification.html#prepare-the-data-for-neural-network"><i class="fa fa-check"></i><b>4.2</b> Prepare the data for neural network</a></li>
+<li class="chapter" data-level="4.3" data-path="text-classification.html"><a href="text-classification.html#building-the-model"><i class="fa fa-check"></i><b>4.3</b> Building the model</a></li>
+<li class="chapter" data-level="4.4" data-path="text-classification.html"><a href="text-classification.html#testing-the-model"><i class="fa fa-check"></i><b>4.4</b> Testing the model</a></li>
+<li class="chapter" data-level="4.5" data-path="text-classification.html"><a href="text-classification.html#reference"><i class="fa fa-check"></i><b>4.5</b> Reference</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="RNN.html"><a href="RNN.html"><i class="fa fa-check"></i><b>5</b> Reccurent Neural Networks (RNN)</a><ul>
+<li class="chapter" data-level="5.1" data-path="RNN.html"><a href="RNN.html#understanding-recurrent-neural-network"><i class="fa fa-check"></i><b>5.1</b> Understanding Recurrent Neural Network</a></li>
+<li class="chapter" data-level="5.2" data-path="RNN.html"><a href="RNN.html#rnn-with-keras"><i class="fa fa-check"></i><b>5.2</b> RNN with Keras</a></li>
+<li class="chapter" data-level="5.3" data-path="RNN.html"><a href="RNN.html#lstm-with-keras"><i class="fa fa-check"></i><b>5.3</b> LSTM with Keras</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="sentiment-analysis.html"><a href="sentiment-analysis.html"><i class="fa fa-check"></i><b>6</b> Sentiment Analysis</a><ul>
+<li class="chapter" data-level="6.1" data-path="sentiment-analysis.html"><a href="sentiment-analysis.html#the-sentiments-dataset"><i class="fa fa-check"></i><b>6.1</b> The “Sentiments” dataset</a></li>
+<li class="chapter" data-level="6.2" data-path="sentiment-analysis.html"><a href="sentiment-analysis.html#application"><i class="fa fa-check"></i><b>6.2</b> Application</a></li>
+<li class="chapter" data-level="6.3" data-path="sentiment-analysis.html"><a href="sentiment-analysis.html#references-1"><i class="fa fa-check"></i><b>6.3</b> References:</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="word-and-document-frequency-tf-idf.html"><a href="word-and-document-frequency-tf-idf.html"><i class="fa fa-check"></i><b>7</b> Word and document frequency (TF-IDF)</a><ul>
+<li class="chapter" data-level="7.1" data-path="word-and-document-frequency-tf-idf.html"><a href="word-and-document-frequency-tf-idf.html#term-frequency-application"><i class="fa fa-check"></i><b>7.1</b> Term frequency application</a></li>
+<li class="chapter" data-level="7.2" data-path="word-and-document-frequency-tf-idf.html"><a href="word-and-document-frequency-tf-idf.html#zipfs-law"><i class="fa fa-check"></i><b>7.2</b> Zipf’s law</a></li>
+<li class="chapter" data-level="7.3" data-path="word-and-document-frequency-tf-idf.html"><a href="word-and-document-frequency-tf-idf.html#tf_idf-metric"><i class="fa fa-check"></i><b>7.3</b> TF_IDF metric</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="topic-modeling.html"><a href="topic-modeling.html"><i class="fa fa-check"></i><b>8</b> Topic modeling</a><ul>
+<li class="chapter" data-level="8.1" data-path="topic-modeling.html"><a href="topic-modeling.html#latent-dirichlet-allocation"><i class="fa fa-check"></i><b>8.1</b> Latent Dirichlet allocation</a></li>
+<li class="chapter" data-level="8.2" data-path="topic-modeling.html"><a href="topic-modeling.html#document-topic-probabilities"><i class="fa fa-check"></i><b>8.2</b> Document-topic probabilities</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="words-relationships-analysis.html"><a href="words-relationships-analysis.html"><i class="fa fa-check"></i><b>9</b> Words’ relationships analysis</a><ul>
+<li class="chapter" data-level="9.1" data-path="words-relationships-analysis.html"><a href="words-relationships-analysis.html#extracting-bi-grams"><i class="fa fa-check"></i><b>9.1</b> Extracting bi-grams</a></li>
+<li class="chapter" data-level="9.2" data-path="words-relationships-analysis.html"><a href="words-relationships-analysis.html#analyzing-bi-grams"><i class="fa fa-check"></i><b>9.2</b> Analyzing bi-grams</a></li>
+<li class="chapter" data-level="9.3" data-path="words-relationships-analysis.html"><a href="words-relationships-analysis.html#visualizing-a-network-of-bigrams"><i class="fa fa-check"></i><b>9.3</b> Visualizing a network of bigrams</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="document-term-matrix.html"><a href="document-term-matrix.html"><i class="fa fa-check"></i><b>10</b> Document-term matrix</a><ul>
+<li class="chapter" data-level="10.1" data-path="document-term-matrix.html"><a href="document-term-matrix.html#converting-dtm-into-dataframe"><i class="fa fa-check"></i><b>10.1</b> COnverting DTM into dataframe</a></li>
+<li class="chapter" data-level="10.2" data-path="document-term-matrix.html"><a href="document-term-matrix.html#generating-document-term-matrix"><i class="fa fa-check"></i><b>10.2</b> Generating Document-term matrix</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Natural Language Processing with R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="document-term-matrix" class="section level1">
+<h1><span class="header-section-number">Chapter 10</span> Document-term matrix</h1>
+<p>A document-term matrix is a mathematical matrix that describes the frequency of terms that occur in a collection of documents. In a document-term matrix:</p>
+<ul>
+<li>Rows correspond to documents in the collection and</li>
+<li>Columns correspond to terms</li>
+<li>Values contain the number of appearances of terms in the specified documents</li>
+</ul>
+<div id="converting-dtm-into-dataframe" class="section level2">
+<h2><span class="header-section-number">10.1</span> COnverting DTM into dataframe</h2>
+<p>We will see how to transform a document-term matrix into a dataframe. We can find examples of DTM data by loading <code>topicmodels</code> package.</p>
+<div class="sourceCode" id="cb168"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb168-1" title="1"><span class="kw">library</span>(tm)</a>
+<a class="sourceLine" id="cb168-2" title="2"><span class="kw">library</span>(topicmodels)</a>
+<a class="sourceLine" id="cb168-3" title="3"><span class="kw">library</span>(quanteda)</a>
+<a class="sourceLine" id="cb168-4" title="4"></a>
+<a class="sourceLine" id="cb168-5" title="5"><span class="kw">data</span>(<span class="st">&quot;AssociatedPress&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;topicmodels&quot;</span>)</a>
+<a class="sourceLine" id="cb168-6" title="6">AssociatedPress</a></code></pre></div>
+<pre><code>## &lt;&lt;DocumentTermMatrix (documents: 2246, terms: 10473)&gt;&gt;
+## Non-/sparse entries: 302031/23220327
+## Sparsity           : 99%
+## Maximal term length: 18
+## Weighting          : term frequency (tf)</code></pre>
+<p>The loaded dataset contains 2246 documents and 10473 distinct terms. We notice that this DTM is 99% sparse (99% of document-word paris are zero). We can get the terms using <code>Terms()</code> function.</p>
+<div class="sourceCode" id="cb170"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb170-1" title="1">terms =<span class="st"> </span><span class="kw">Terms</span>(AssociatedPress)</a>
+<a class="sourceLine" id="cb170-2" title="2"><span class="kw">head</span>(terms)</a></code></pre></div>
+<pre><code>## [1] &quot;aaron&quot;      &quot;abandon&quot;    &quot;abandoned&quot;  &quot;abandoning&quot; &quot;abbott&quot;    
+## [6] &quot;abboud&quot;</code></pre>
+<p>In order to analyze the data, we should transform it inot dataframe. We can use <code>tidy()</code> function to do that.</p>
+<div class="sourceCode" id="cb172"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb172-1" title="1">ap_td =<span class="st"> </span><span class="kw">tidy</span>(AssociatedPress)</a>
+<a class="sourceLine" id="cb172-2" title="2">ap_td</a></code></pre></div>
+<pre><code>## # A tibble: 302,031 x 3
+##    document term       count
+##       &lt;int&gt; &lt;chr&gt;      &lt;dbl&gt;
+##  1        1 adding         1
+##  2        1 adult          2
+##  3        1 ago            1
+##  4        1 alcohol        1
+##  5        1 allegedly      1
+##  6        1 allen          1
+##  7        1 apparently     2
+##  8        1 appeared       1
+##  9        1 arrested       1
+## 10        1 assault        1
+## # ... with 302,021 more rows</code></pre>
+<p>Once we have the data in a dataframe format, we can perform some analysis. Here is an example of applying sentiment analysis to evaluate the negative and positive terms in the collection.</p>
+<div class="sourceCode" id="cb174"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb174-1" title="1"><span class="co"># using &quot;bing&quot; database to attribute negative/positive attribute to terms</span></a>
+<a class="sourceLine" id="cb174-2" title="2">ap_sentiments =<span class="st"> </span>ap_td <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb174-3" title="3"><span class="st">  </span><span class="kw">inner_join</span>(<span class="kw">get_sentiments</span>(<span class="st">&quot;bing&quot;</span>), <span class="dt">by =</span> <span class="kw">c</span>(<span class="dt">term =</span> <span class="st">&quot;word&quot;</span>))</a>
+<a class="sourceLine" id="cb174-4" title="4">ap_sentiments</a></code></pre></div>
+<pre><code>## # A tibble: 30,094 x 4
+##    document term    count sentiment
+##       &lt;int&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;    
+##  1        1 assault     1 negative 
+##  2        1 complex     1 negative 
+##  3        1 death       1 negative 
+##  4        1 died        1 negative 
+##  5        1 good        2 positive 
+##  6        1 illness     1 negative 
+##  7        1 killed      2 negative 
+##  8        1 like        2 positive 
+##  9        1 liked       1 positive 
+## 10        1 miracle     1 positive 
+## # ... with 30,084 more rows</code></pre>
+<div class="sourceCode" id="cb176"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb176-1" title="1"><span class="co"># plot the results</span></a>
+<a class="sourceLine" id="cb176-2" title="2"><span class="kw">library</span>(ggplot2)</a>
+<a class="sourceLine" id="cb176-3" title="3"></a>
+<a class="sourceLine" id="cb176-4" title="4">ap_sentiments <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb176-5" title="5"><span class="st">  </span><span class="kw">count</span>(sentiment, term, <span class="dt">wt =</span> count) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb176-6" title="6"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb176-7" title="7"><span class="st">  </span><span class="kw">filter</span>(n <span class="op">&gt;=</span><span class="st"> </span><span class="dv">200</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb176-8" title="8"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">n =</span> <span class="kw">ifelse</span>(sentiment <span class="op">==</span><span class="st"> &quot;negative&quot;</span>, <span class="op">-</span>n, n)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb176-9" title="9"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">term =</span> <span class="kw">reorder</span>(term, n)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb176-10" title="10"><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(term, n, <span class="dt">fill =</span> sentiment)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb176-11" title="11"><span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb176-12" title="12"><span class="st">  </span><span class="kw">ylab</span>(<span class="st">&quot;Contribution to sentiment&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb176-13" title="13"><span class="st">  </span><span class="kw">coord_flip</span>()</a></code></pre></div>
+<p><img src="NLP-book_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+</div>
+<div id="generating-document-term-matrix" class="section level2">
+<h2><span class="header-section-number">10.2</span> Generating Document-term matrix</h2>
+<p>Some algorithms may need document-term matrix as input. The <code>cast_dtm</code> function enable the generation of DTM structure from a dataframe.</p>
+<div class="sourceCode" id="cb177"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb177-1" title="1">ap_td <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb177-2" title="2"><span class="st">  </span><span class="kw">cast_dtm</span>(document, term, count)</a></code></pre></div>
+<pre><code>## &lt;&lt;DocumentTermMatrix (documents: 2246, terms: 10473)&gt;&gt;
+## Non-/sparse entries: 302031/23220327
+## Sparsity           : 99%
+## Maximal term length: 18
+## Weighting          : term frequency (tf)</code></pre>
+<p>We can also generate a Document-feature matrix by using the <code>cast_dfm</code> function</p>
+<div class="sourceCode" id="cb179"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb179-1" title="1">ap_td <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb179-2" title="2"><span class="st">  </span><span class="kw">cast_dfm</span>(document, term, count)</a></code></pre></div>
+<pre><code>## Document-feature matrix of: 2,246 documents, 10,473 features (98.7% sparse).
+##     features
+## docs adding adult ago alcohol allegedly allen apparently appeared arrested
+##    1      1     2   1       1         1     1          2        1        1
+##    2      0     0   0       0         0     0          0        1        0
+##    3      0     0   1       0         0     0          0        1        0
+##    4      0     0   3       0         0     0          0        0        0
+##    5      0     0   0       0         0     0          0        0        0
+##    6      0     0   2       0         0     0          0        0        0
+##     features
+## docs assault
+##    1       1
+##    2       0
+##    3       0
+##    4       0
+##    5       0
+##    6       0
+## [ reached max_ndoc ... 2,240 more documents, reached max_nfeat ... 10,463 more features ]</code></pre>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="words-relationships-analysis.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["NLP-book.pdf", "NLP-book.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
